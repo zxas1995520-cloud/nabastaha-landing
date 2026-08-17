@@ -141,22 +141,17 @@
       }, 1500);
     };
 
-    const handleFailure = function () {
-      if (transitionStarted) return;
-      intro.classList.add("is-loaded");
-      setTimeout(function () { startTransition(true); }, 700);
-    };
-
     /* --- accurate end detection: the HTML5 `ended` event --- */
     video.addEventListener("ended", function () {
       startTransition(false);
       finishIntro();
     });
 
-    /* --- safety net only (never the primary trigger) --- */
+    /* --- safety net: if metadata loads, set a timer based on actual duration --- */
     video.addEventListener("loadedmetadata", function () {
       const dur = video.duration;
       if (Number.isFinite(dur) && dur > 0) {
+        intro.classList.add("is-loaded");
         fallbackTimer = setTimeout(function () {
           if (!transitionStarted) { startTransition(true); finishIntro(); }
         }, (dur * 1000) + 1600);
@@ -175,7 +170,7 @@
       video.style.opacity = "1";
     };
     video.addEventListener("canplay", fadeVideoIn);
-    setTimeout(fadeVideoIn, 2400); /* safety: never sit on a blank dark screen */
+    setTimeout(fadeVideoIn, 2400);
 
     const play = function () {
       if (played || transitionStarted) return;
@@ -187,17 +182,23 @@
             video.muted = true;
             const retry = video.play();
             if (retry && typeof retry.catch === "function") {
-              retry.catch(handleFailure);
+              retry.catch(function () { /* video won't play, wait for fallback */ });
             }
           });
         }
-      } catch (e) { handleFailure(); }
+      } catch (e) { /* ignore */ }
     };
 
     video.addEventListener("canplay", play);
-    video.addEventListener("error", handleFailure);
 
-    /* --- Skip Intro (non-distracting, appears after a moment) --- */
+    /* --- Only skip on hard error, not on loading delay --- */
+    video.addEventListener("error", function () {
+      if (transitionStarted) return;
+      intro.classList.add("is-loaded");
+      setTimeout(function () { startTransition(true); }, 700);
+    });
+
+    /* --- Skip Intro button --- */
     setTimeout(function () {
       if (transitionStarted) return;
       skipBtn.hidden = false;
@@ -210,18 +211,10 @@
       finishIntro();
     });
 
-    /* --- Hard safety net: force transition after 14 s no matter what --- */
+    /* --- Hard safety net: force transition after 18 s no matter what --- */
     hardTimer = setTimeout(function () {
       if (!transitionStarted) { startTransition(true); finishIntro(); }
-    }, 14000);
-
-    /* --- Early readyState check: if video data never arrives in 3 s, fail fast --- */
-    setTimeout(function () {
-      if (transitionStarted) return;
-      if (video.readyState < 2) { /* HAVE_CURRENT_DATA or less */
-        handleFailure();
-      }
-    }, 3000);
+    }, 18000);
   };
 
   /* ============================================================
