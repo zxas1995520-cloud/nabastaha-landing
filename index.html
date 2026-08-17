@@ -1,0 +1,381 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>نبسطها — التشريح فهمٌ.. لا حفظ.</title>
+  <meta name="description" content="نبسطها منصة تعليمية تفاعلية لطلبة طب الأسنان، تحول الملازم والمعلومات التشريحية المعقدة إلى تجربة تعلم بصرية، مبسطة ومنظمة وتفاعلية.">
+  <meta name="theme-color" content="#17130F">
+  <meta property="og:title" content="نبسطها — التشريح فهمٌ.. لا حفظ.">
+  <meta property="og:description" content="منصة تفاعلية لطلبة طب الأسنان تحول التشريح المعقد إلى تجربة تعلم بصرية، مبسطة ومنظمة.">
+  <meta property="og:type" content="website">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa+Ink:wght@400;700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <noscript><style>#intro{display:none}</style></noscript>
+</head>
+<body>
+
+  <!-- ============ CINEMATIC OPENING (EXISTING LOCAL ANIMATION) ============ -->
+  <div id="intro" class="intro is-loading" aria-hidden="true">
+    <div class="intro-stage" id="intro-stage"></div>
+
+    <div class="intro-vignette"></div>
+    <div class="intro-grain"></div>
+
+    <!-- The golden light that rises when the animation ends -->
+    <div class="intro-glow" id="intro-glow" aria-hidden="true">
+      <div class="intro-glow-core"></div>
+    </div>
+
+    <div class="intro-loader" id="intro-loader" aria-hidden="true">
+      <span class="intro-loader-mark">نبسطها</span>
+      <span class="intro-loader-line"><i></i></span>
+    </div>
+
+    <button type="button" id="skip-intro" class="skip-intro" hidden>تخطّي المقدمة</button>
+  </div>
+
+  <!-- ============ NAVIGATION ============ -->
+  <header class="nav" id="nav">
+    <div class="nav-inner">
+      <a class="brand" href="#top" aria-label="نبسطها — الرئيسية">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="22" height="22"><use href="#brand-glyph"/></svg>
+        </span>
+        نبسطها
+      </a>
+
+      <nav class="nav-links" id="nav-links" aria-label="التنقل الرئيسي">
+        <a href="#why">ليش نبسطها؟</a>
+        <a href="#how">شلون تشتغل؟</a>
+        <a href="#offer">شنو نقدم؟</a>
+        <a href="#about">عن نبسطها</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a class="btn btn-gold btn-sm nav-cta" href="https://www.instagram.com/nab10_20?igsh=MWgyNXM4cGl3dmQwdg%3D%3D&amp;utm_source=qr" target="_blank" rel="noopener noreferrer">
+          تابعنا على Instagram
+        </a>
+        <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-links" aria-label="فتح القائمة">
+          <span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- brand glyph used by nav mark + footer -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="brand-glyph" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M12 2l2.5 7 7 .6-5.4 4.6 1.8 6.9L12 17.3 6.1 21l1.8-6.9L2.5 9.6l7-.6z"/>
+      </symbol>
+    </defs>
+  </svg>
+
+  <main id="page" class="page">
+
+    <!-- ============ HERO ============ -->
+    <section id="top" class="hero">
+      <div class="hero-glow" data-parallax="0.08" aria-hidden="true"></div>
+
+      <div class="hero-inner">
+        <p class="hero-eyebrow reveal-intro" style="--d:.15s">
+          <span class="line-rule" aria-hidden="true"></span>
+          منصة تفاعلية لطلبة طب الأسنان
+        </p>
+
+        <h1 class="hero-title">
+          <span class="line line-1 reveal-intro" style="--d:.28s">التشريح؟</span>
+          <span class="line line-2 reveal-intro" style="--d:.42s">نبسطها<i class="title-dot" aria-hidden="true"></i></span>
+        </h1>
+
+        <p class="hero-motto reveal-intro" style="--d:.58s">التشريح فهمٌ.. لا حفظ.</p>
+
+        <p class="hero-desc reveal-intro" style="--d:.72s">
+          نبسطها منصة تعليمية تفاعلية لطلبة طب الأسنان، تحول الملازم والمعلومات التشريحية المعقدة
+          إلى تجربة تعلم بصرية، مبسطة ومنظمة وتفاعلية.
+        </p>
+
+        <div class="hero-cta reveal-intro" style="--d:.9s">
+          <a class="btn btn-gold" href="#offer">ابدأ رحلة الفهم</a>
+          <a class="btn btn-line" href="#why">اكتشف نبسطها</a>
+        </div>
+      </div>
+
+      <a class="hero-scroll" href="#why" aria-label="مرر للأسفل">
+        <span>مرر للأسفل</span>
+        <i aria-hidden="true"></i>
+      </a>
+    </section>
+
+    <!-- ============ WHY ============ -->
+    <section id="why" class="why" aria-labelledby="why-title">
+      <div class="wrap">
+        <p class="kicker" data-reveal>ليش نبسطها؟</p>
+        <h2 class="sec-title" id="why-title" data-reveal="blur">ليش أصلاً سوّينا نبسطها؟</h2>
+
+        <p class="why-statement" data-reveal="blur">
+          "المشكلة مو دائماً بالمادة…<br>
+          مرات المشكلة بطريقة تقديمها."
+        </p>
+
+        <p class="why-intro" data-reveal>
+          نفس المادة، نفس الملزمة، نفس المعلومات… بس طريقة العرض تفرق كل شي.
+          إذا الطالب ضايع بالتشريح، غالباً مو هو السبب:
+        </p>
+
+        <div class="problem-grid">
+          <article class="problem-card" data-reveal style="--d:.0s">
+            <span class="problem-num">٠١</span>
+            <h3>ملازم ضخمة</h3>
+            <p>مئات الصفحات، وكل صفحة تشبه اللي قبلها.</p>
+          </article>
+          <article class="problem-card" data-reveal style="--d:.08s">
+            <span class="problem-num">٠٢</span>
+            <h3>مصطلحات صعبة</h3>
+            <p>أسماء لاتينية معقدة بدون شرح ولا تفسير.</p>
+          </article>
+          <article class="problem-card" data-reveal style="--d:.16s">
+            <span class="problem-num">٠٣</span>
+            <h3>معلومات متفرقة</h3>
+            <p>كل شي مبعثر بين المحاضرة والملزمة والدفتر.</p>
+          </article>
+          <article class="problem-card" data-reveal style="--d:.24s">
+            <span class="problem-num">٠٤</span>
+            <h3>حفظ زائد</h3>
+            <p>تحفظ بدون ما تفهم، وبعد يومين كل شي يطير.</p>
+          </article>
+          <article class="problem-card" data-reveal style="--d:.32s">
+            <span class="problem-num">٠٥</span>
+            <h3>علاقات معقدة</h3>
+            <p>أعصاب وشرايين وعضلات… كلها متشابكة فوق بعض.</p>
+          </article>
+          <article class="problem-card" data-reveal style="--d:.4s">
+            <span class="problem-num">٠٦</span>
+            <h3>قراءة سلبية</h3>
+            <p>تفتح الـ PDF وتقرأ… وخلاص. بدون تفاعل ولا تجربة.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CHAOS → CLARITY ============ -->
+    <section id="how" class="chaos" aria-labelledby="how-title">
+      <div class="chaos-tall">
+        <div class="chaos-sticky" id="chaos-sticky">
+
+          <div class="chaos-head">
+            <p class="kicker" data-reveal>شلون تشتغل؟</p>
+            <h2 class="sec-title" id="how-title" data-reveal="blur">من الفوضى… إلى الوضوح</h2>
+          </div>
+
+          <div class="chaos-caption" id="chaos-caption">
+            <span class="cap cap-before">هذا وضع الملزمة عندك؟</span>
+            <span class="cap cap-after">هذا وضعك مع نبسطها.</span>
+          </div>
+
+          <div class="chaos-field" id="chaos-field">
+            <div class="chaos-sweep" aria-hidden="true"></div>
+            <div class="chaos-grid" id="chaos-grid">
+              <span class="chip">ملزمة تشريح ٤٠٠ صفحة</span>
+              <span class="chip lat">Mandibular Nerve</span>
+              <span class="chip">مصطلحات لاتينية صعبة</span>
+              <span class="chip lat">Facial Nerve</span>
+              <span class="chip">علاقات عضلية معقدة</span>
+              <span class="chip lat">Maxillary Artery</span>
+              <span class="chip">حفظ بدون فهم</span>
+              <span class="chip lat">Trigeminal Nerve</span>
+              <span class="chip">ملاحظات متفرقة</span>
+              <span class="chip">قراءة PDF سلبية</span>
+              <span class="chip">معلومات ضبابية</span>
+              <span class="chip lat">Pterygoid Plexus</span>
+            </div>
+          </div>
+
+          <div class="chaos-label" id="chaos-label" aria-hidden="true">
+            <span class="l-chaos">CHAOS</span>
+            <span class="l-arrow">→</span>
+            <span class="l-clarity">CLARITY</span>
+          </div>
+
+          <p class="chaos-note" data-reveal>
+            نبسطها ترتب المادة، توضح العلاقات، وتخلي التشريح شي تشوفه وتفهمه — مو بس تحفظه.
+          </p>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SOLUTION ============ -->
+    <section id="offer" class="offer" aria-labelledby="offer-title">
+      <div class="wrap">
+        <p class="kicker" data-reveal>شنو نقدم؟</p>
+        <h2 class="sec-title" id="offer-title" data-reveal="blur">
+          إحنا ما نختصر المادة…<br>إحنا نبسطها.
+        </h2>
+
+        <p class="offer-intro" data-reveal>
+          نبسطها تحول المادة التقليدية إلى تجربة تعلم تفاعلية حية:
+          شغالات تفاعلية، شرح مبسط، مصطلحات طبية واضحة، وتشريح بصري تشوفه بعينك.
+        </p>
+
+        <div class="offer-list">
+          <article class="offer-item" data-reveal>
+            <span class="offer-num" aria-hidden="true">٠١</span>
+            <div class="offer-body">
+              <h3>Interactive Slides</h3>
+              <p>شغالات تفاعلية تنقلك من الشريحة الباهتة إلى شرح حي تشوفه وهو يتحرك قدامك.</p>
+            </div>
+            <span class="offer-line" aria-hidden="true"></span>
+          </article>
+
+          <article class="offer-item" data-reveal>
+            <span class="offer-num" aria-hidden="true">٠٢</span>
+            <div class="offer-body">
+              <h3>Simplified Explanations</h3>
+              <p>الشرح بالمصطلح الطبي الصحيح وبأسلوب بسيط تفهمه من أول مرة.</p>
+            </div>
+            <span class="offer-line" aria-hidden="true"></span>
+          </article>
+
+          <article class="offer-item" data-reveal>
+            <span class="offer-num" aria-hidden="true">٠٣</span>
+            <div class="offer-body">
+              <h3>Medical Terminology</h3>
+              <p>المصطلح الإنجليزي، معناه العربي، والنطق الصحيح — كل شي بمكان واحد.</p>
+            </div>
+            <span class="offer-line" aria-hidden="true"></span>
+          </article>
+
+          <article class="offer-item" data-reveal>
+            <span class="offer-num" aria-hidden="true">٠٤</span>
+            <div class="offer-body">
+              <h3>Visual Anatomy</h3>
+              <p>تشريح بصري يوضح العلاقات بين الأعصاب والشرايين والعضلات مكان ما تنسى.</p>
+            </div>
+            <span class="offer-line" aria-hidden="true"></span>
+          </article>
+
+          <article class="offer-item" data-reveal>
+            <span class="offer-num" aria-hidden="true">٠٥</span>
+            <div class="offer-body">
+              <h3>Organized Learning</h3>
+              <p>مادة منظمة ومرتبة ومقسمة بالطريقة الصح — تعرف من وين تبدأ وإلى وين تروح.</p>
+            </div>
+            <span class="offer-line" aria-hidden="true"></span>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ INTERACTIVE TERMINOLOGY ============ -->
+    <section id="demo" class="term-demo" aria-labelledby="term-title">
+      <div class="wrap">
+        <p class="kicker" data-reveal>جربها بنفسك</p>
+        <h2 class="sec-title" id="term-title" data-reveal="blur">المصطلحات الطبية صارت أسهل</h2>
+
+        <div class="term-tabs" role="tablist" aria-label="مصطلحات طبية تفاعلية">
+          <button type="button" class="term-tab is-active" role="tab" aria-selected="true" aria-controls="term-panel" data-term="mandibular">
+            Mandibular Nerve
+          </button>
+          <button type="button" class="term-tab" role="tab" aria-selected="false" aria-controls="term-panel" data-term="trigeminal">
+            Trigeminal Nerve
+          </button>
+          <button type="button" class="term-tab" role="tab" aria-selected="false" aria-controls="term-panel" data-term="maxillary">
+            Maxillary Artery
+          </button>
+        </div>
+
+        <div class="term-panel" id="term-panel" role="tabpanel" aria-live="polite" data-reveal="blur">
+
+          <div class="term-row">
+            <div class="term-main">
+              <span class="term-field">English Term</span>
+              <h3 class="term-english" id="term-english">Mandibular Nerve</h3>
+            </div>
+            <div class="term-col">
+              <span class="term-field">Arabic Medical Meaning</span>
+              <p class="term-arabic" id="term-arabic">العصب الفكي السفلي</p>
+            </div>
+            <div class="term-col">
+              <span class="term-field">Pronunciation</span>
+              <p class="term-ipa" id="term-ipa">«ماندِبيولار نيرف»</p>
+            </div>
+          </div>
+
+          <div class="term-explain">
+            <span class="term-field">Simplified Explanation</span>
+            <p id="term-text">
+              هو فرع من العصب ثلاثي التوائم (Trigeminal Nerve) يغذي الجزء السفلي من الوجه —
+              الأسنان السفلية، الفك السفلي، وعضلات المضغ. لو انضغط يسبب ألم أو تنميل بالفك السفلي.
+              فهمت مساره؟ صار حفظ اسمه أسهل.
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PHILOSOPHY ============ -->
+    <section id="about" class="philosophy" aria-labelledby="phil-title">
+      <div class="phil-pattern" aria-hidden="true"></div>
+
+      <div class="wrap">
+        <p class="kicker kicker-light" data-reveal>عن نبسطها</p>
+        <h2 class="phil-title" id="phil-title" data-reveal="blur">
+          "إذا فهمت التشريح…<br>الحفظ يصير أسهل."
+        </h2>
+
+        <p class="phil-text" data-reveal>
+          نبسطها مو مكان الطالب حتى يحفظ أكثر.
+          نبسطها حتى <strong class="gold-hl">يفهم أسرع</strong>.
+        </p>
+
+        <p class="phil-tagline" data-reveal>
+          من الفوضى إلى الوضوح.<br>
+          من الحفظ إلى الفهم.<br>
+          من الورقة إلى التجربة.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ FINAL CTA ============ -->
+    <section class="final-cta" aria-labelledby="cta-title">
+      <div class="cta-glow" aria-hidden="true"></div>
+      <div class="wrap">
+        <p class="kicker kicker-light" data-reveal>خل نبدأ</p>
+        <h2 class="cta-title" id="cta-title" data-reveal="blur">
+          جاهز تبدي تفهم التشريح؟<br>
+          <span class="cta-brand">خل نبسطها.</span>
+        </h2>
+
+        <div class="cta-actions" data-reveal>
+          <a class="btn btn-gold" href="#demo">ابدأ رحلة الفهم</a>
+          <a class="btn btn-line" href="https://www.instagram.com/nab10_20?igsh=MWgyNXM4cGl3dmQwdg%3D%3D&amp;utm_source=qr" target="_blank" rel="noopener noreferrer">
+            تابعنا على Instagram
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer">
+    <div class="footer-mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="20" height="20"><use href="#brand-glyph"/></svg>
+    </div>
+    <p class="footer-brand">نبسطها</p>
+    <p class="footer-motto">التشريح فهمٌ.. لا حفظ.</p>
+    <a class="footer-ig" href="https://www.instagram.com/nab10_20?igsh=MWgyNXM4cGl3dmQwdg%3D%3D&amp;utm_source=qr" target="_blank" rel="noopener noreferrer">
+      Instagram — nab10_20
+    </a>
+    <div class="footer-divider" aria-hidden="true"></div>
+    <p class="footer-copy">© 2026 Nabastaha — صُنع بشغف في العراق</p>
+  </footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>
