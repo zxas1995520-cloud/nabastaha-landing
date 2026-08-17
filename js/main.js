@@ -11,7 +11,7 @@
   document.documentElement.classList.add("js");
 
   /* ---------- centralized animation path ---------- */
-  const ANIMATION_PATH = "./animation/الخليفة.mp4";
+  const ANIMATION_PATH = "./animation/intro.mp4";
   const STORAGE_KEY = "nabastaha_intro_seen";
 
   const prefersReducedMotion =
