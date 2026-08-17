@@ -430,8 +430,12 @@
     if (prefersReducedMotion) {
       let seen = false;
       try { seen = !!sessionStorage.getItem(STORAGE_KEY); } catch (e) { /* ignore */ }
-      finishQuick();
-      return;
+      if (seen) {
+        finishQuick();
+        return;
+      }
+      /* First-time visitor with reduced motion: still show the intro,
+         just with simplified transitions (handled by CSS). */
     }
 
     let seen = false;

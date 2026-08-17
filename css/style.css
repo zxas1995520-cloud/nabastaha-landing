@@ -181,8 +181,9 @@ body { overscroll-behavior: none; }
 #intro { touch-action: none; }
 
 /* CSS safety-net: auto-dismiss the intro after ~17 s when JS never runs.
-   JS disables this animation on init via inline style override. */
-#intro {
+   JS disables this animation on init via inline style override.
+   html:not(.js) ensures this only fires when JS hasn't loaded. */
+html:not(.js) #intro {
   animation: intro-auto-dismiss 17s linear forwards;
 }
 @keyframes intro-auto-dismiss {
@@ -1285,8 +1286,8 @@ body { overscroll-behavior: none; }
 
   .intro-loader-mark, .intro-loader-line i { animation: none; }
 
-  /* reduced-motion: dismiss intro almost immediately */
-  #intro {
+  /* reduced-motion: dismiss intro almost immediately (only when JS absent) */
+  html:not(.js) #intro {
     animation: intro-auto-dismiss-reduced 0.45s linear forwards;
   }
   @keyframes intro-auto-dismiss-reduced {
