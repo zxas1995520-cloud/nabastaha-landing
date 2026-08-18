@@ -67,8 +67,11 @@
 
   const buildVideo = function () {
     var video = document.createElement("video");
+    video.setAttribute("autoplay", "");
+    video.setAttribute("loop", "");
     video.setAttribute("muted", "");
     video.setAttribute("playsinline", "");
+    video.setAttribute("controlslist", "nodownload");
     video.setAttribute("preload", "auto");
     video.disablePictureInPicture = true;
     video.setAttribute("aria-hidden", "true");
