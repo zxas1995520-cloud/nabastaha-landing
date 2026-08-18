@@ -1,18 +1,16 @@
 /* ============================================================
    NABASTAHA — main.js
-   The existing local animation is the cinematic opening.
-   It is INTEGRATED, not recreated. ANIMATION_PATH is the single
-   source of truth for the animation location.
+   Cinematic intro → landing page transition.
+   Single state machine: idle → playing → transitioning → gone
    ============================================================ */
 (function () {
   "use strict";
 
-  /* JS is active: gate entrance/reveal states behind this class */
   document.documentElement.classList.add("js");
 
-  /* ---------- centralized animation path ---------- */
   const ANIMATION_PATH = "./animation/intro.mp4";
   const STORAGE_KEY = "nabastaha_intro_seen";
+  const HARD_TIMEOUT = 18000;
 
   const prefersReducedMotion =
     window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -22,28 +20,53 @@
   const skipBtn = document.getElementById("skip-intro");
   const body = document.body;
 
-  /* ============================================================
-     1. INTRO — existing local animation
-     ============================================================ */
+  /* ---------- helpers ---------- */
 
   const setSeen = function () {
-    try { sessionStorage.setItem(STORAGE_KEY, "1"); } catch (e) { /* ignore */ }
+    try { sessionStorage.setItem(STORAGE_KEY, "1"); } catch (e) {}
   };
 
-  const finishQuick = function () {
-    /* Returning visitor or reduced-motion: short fade to the page. */
+  const hasSeen = function () {
+    try { return !!sessionStorage.getItem(STORAGE_KEY); } catch (e) { return false; }
+  };
+
+  const clearAllTimers = function (timers) {
+    timers.forEach(function (t) { if (t) clearTimeout(t); });
+  };
+
+  /* ---------- finish the intro: always called exactly once ---------- */
+
+  let introFinished = false;
+
+  const finishIntro = function () {
+    if (introFinished) return;
+    introFinished = true;
+
+    body.classList.remove("intro-active");
+
+    setTimeout(function () {
+      intro.classList.add("is-gone");
+      setTimeout(function () { intro.remove(); }, 700);
+    }, 1500);
+  };
+
+  /* ---------- skip straight to page (returning visitors) ---------- */
+
+  const skipToIntro = function () {
     body.classList.add("page-live");
     intro.classList.add("is-loaded", "is-out", "is-gone");
     document.querySelectorAll("[data-reveal]").forEach(function (el) {
       el.classList.add("revealed");
     });
-    const sticky = document.getElementById("chaos-sticky");
+    var sticky = document.getElementById("chaos-sticky");
     if (sticky) sticky.classList.add("done");
     setTimeout(function () { intro.remove(); }, 700);
   };
 
+  /* ---------- video builder ---------- */
+
   const buildVideo = function () {
-    const video = document.createElement("video");
+    var video = document.createElement("video");
     video.setAttribute("muted", "");
     video.setAttribute("playsinline", "");
     video.setAttribute("preload", "auto");
@@ -52,109 +75,102 @@
     video.setAttribute("tabindex", "-1");
     video.style.opacity = "0";
 
-    const source = document.createElement("source");
+    var source = document.createElement("source");
     source.src = ANIMATION_PATH;
     source.type = "video/mp4";
     video.appendChild(source);
-
     return video;
   };
 
-  /* Analyze the final frame of the supplied animation so the
-     transition can adapt to how it actually ends. Default is the
-     warm golden rise. */
+  /* ---------- analyze final frame for adaptive transition ---------- */
+
   const analyzeEnding = function (video) {
     try {
-      const w = video.videoWidth, h = video.videoHeight;
+      var w = video.videoWidth, h = video.videoHeight;
       if (!w || !h) return;
-      const canvas = document.createElement("canvas");
+      var canvas = document.createElement("canvas");
       canvas.width = w;
       canvas.height = h;
-      const ctx = canvas.getContext("2d");
+      var ctx = canvas.getContext("2d");
       if (!ctx) return;
       ctx.drawImage(video, 0, 0, w, h);
 
-      const band = ctx.getImageData(0, Math.floor(h * 0.7), w, Math.floor(h * 0.3)).data;
-      let sum = 0, n = 0;
-      for (let i = 0; i < band.length; i += 4) {
+      var band = ctx.getImageData(0, Math.floor(h * 0.7), w, Math.floor(h * 0.3)).data;
+      var sum = 0, n = 0;
+      for (var i = 0; i < band.length; i += 4) {
         sum += 0.2126 * band[i] + 0.7152 * band[i + 1] + 0.0722 * band[i + 2];
         n++;
       }
-      const avgBand = sum / n;
+      var avgBand = sum / n;
 
-      const full = ctx.getImageData(0, 0, w, Math.floor(h * 0.55)).data;
-      let fsum = 0, fn = 0;
-      for (let i = 0; i < full.length; i += 4) {
-        fsum += 0.2126 * full[i] + 0.7152 * full[i + 1] + 0.0722 * full[i + 2];
+      var full = ctx.getImageData(0, 0, w, Math.floor(h * 0.55)).data;
+      var fsum = 0, fn = 0;
+      for (var j = 0; j < full.length; j += 4) {
+        fsum += 0.2126 * full[j] + 0.7152 * full[j + 1] + 0.0722 * full[j + 2];
         fn++;
       }
-      const avgFull = fsum / fn;
+      var avgFull = fsum / fn;
 
       if (avgBand > 150 && avgFull > 100) {
-        intro.classList.add("ending-bright"); /* ivory dissolve */
+        intro.classList.add("ending-bright");
       } else if (avgFull < 45) {
-        intro.classList.add("ending-dark"); /* stronger golden rise */
+        intro.classList.add("ending-dark");
       }
-      /* otherwise: default warm golden rise */
-    } catch (e) { /* default golden rise */ }
+    } catch (e) {}
   };
 
+  /* ============================================================
+     1. INTRO — cinematic opening with local animation
+     ============================================================ */
+
   const runIntro = function () {
-    /* Cancel the CSS safety-net auto-dismiss — JS owns the intro now. */
+    body.classList.add("intro-active");
+
+    /* Cancel CSS safety-net — JS owns the intro now. */
     intro.style.animation = "none";
 
-    const video = buildVideo();
+    var video = buildVideo();
     stage.appendChild(video);
 
-    let transitionStarted = false;
-    let played = false;
-    let fallbackTimer = null;
-    let hardTimer = null;
+    var timers = [];
+    var state = "idle"; /* idle → playing → transitioning → done */
 
     const startTransition = function (viaSkip) {
-      if (transitionStarted) return;
-      transitionStarted = true;
+      if (state === "transitioning" || state === "done") return;
+      state = "transitioning";
+      clearAllTimers(timers);
 
-      try { video.pause(); } catch (e) { /* ignore */ }
-      if (fallbackTimer) { clearTimeout(fallbackTimer); }
-      if (hardTimer) { clearTimeout(hardTimer); }
-
+      try { video.pause(); } catch (e) {}
       analyzeEnding(video);
 
-      /* The landing page starts revealing behind the dissolve. */
       body.classList.add("page-live");
 
-      /* Short cinematic hold so the final frame registers. */
-      const hold = viaSkip ? 0 : 420;
+      var hold = viaSkip ? 0 : 420;
       setTimeout(function () {
         intro.classList.add("is-out");
         skipBtn.classList.remove("is-visible");
         skipBtn.hidden = true;
         setSeen();
+        state = "done";
+        finishIntro();
       }, hold);
     };
 
-    const finishIntro = function () {
-      setTimeout(function () {
-        intro.classList.add("is-gone");
-        setTimeout(function () { intro.remove(); }, 700);
-      }, 1500);
-    };
-
-    /* --- accurate end detection: the HTML5 `ended` event --- */
+    /* --- video ended (normal completion) --- */
     video.addEventListener("ended", function () {
       startTransition(false);
-      finishIntro();
     });
 
-    /* --- safety net: if metadata loads, set a timer based on actual duration --- */
+    /* --- loadedmetadata: set duration-based fallback --- */
     video.addEventListener("loadedmetadata", function () {
-      const dur = video.duration;
+      var dur = video.duration;
       if (Number.isFinite(dur) && dur > 0) {
         intro.classList.add("is-loaded");
-        fallbackTimer = setTimeout(function () {
-          if (!transitionStarted) { startTransition(true); finishIntro(); }
-        }, (dur * 1000) + 1600);
+        timers.push(setTimeout(function () {
+          if (state === "idle" || state === "playing") {
+            startTransition(true);
+          }
+        }, (dur * 1000) + 1600));
       }
     });
 
@@ -162,7 +178,8 @@
       intro.classList.add("is-loaded");
     });
 
-    let fadedIn = false;
+    /* --- fade video in when ready --- */
+    var fadedIn = false;
     const fadeVideoIn = function () {
       if (fadedIn) return;
       fadedIn = true;
@@ -170,51 +187,56 @@
       video.style.opacity = "1";
     };
     video.addEventListener("canplay", fadeVideoIn);
-    setTimeout(fadeVideoIn, 2400);
+    timers.push(setTimeout(fadeVideoIn, 2400));
 
+    /* --- play when ready --- */
+    var played = false;
     const play = function () {
-      if (played || transitionStarted) return;
+      if (played || state !== "idle") return;
       played = true;
+      state = "playing";
       try {
-        const p = video.play();
+        var p = video.play();
         if (p && typeof p.catch === "function") {
           p.catch(function () {
             video.muted = true;
-            const retry = video.play();
+            var retry = video.play();
             if (retry && typeof retry.catch === "function") {
-              retry.catch(function () { /* video won't play, wait for fallback */ });
+              retry.catch(function () {});
             }
           });
         }
-      } catch (e) { /* ignore */ }
+      } catch (e) {}
     };
-
     video.addEventListener("canplay", play);
 
-    /* --- Only skip on hard error, not on loading delay --- */
+    /* --- video failed to load: fall through to page --- */
     video.addEventListener("error", function () {
-      if (transitionStarted) return;
+      if (state !== "idle") return;
       intro.classList.add("is-loaded");
-      setTimeout(function () { startTransition(true); }, 700);
+      timers.push(setTimeout(function () {
+        startTransition(true);
+      }, 700));
     });
 
-    /* --- Skip Intro button --- */
-    setTimeout(function () {
-      if (transitionStarted) return;
+    /* --- Skip button --- */
+    timers.push(setTimeout(function () {
+      if (state === "done") return;
       skipBtn.hidden = false;
       requestAnimationFrame(function () { skipBtn.classList.add("is-visible"); });
-    }, 900);
+    }, 900));
 
     skipBtn.addEventListener("click", function () {
       setSeen();
       startTransition(true);
-      finishIntro();
     });
 
-    /* --- Hard safety net: force transition after 18 s no matter what --- */
-    hardTimer = setTimeout(function () {
-      if (!transitionStarted) { startTransition(true); finishIntro(); }
-    }, 18000);
+    /* --- Hard safety net: force transition after 18s no matter what --- */
+    timers.push(setTimeout(function () {
+      if (state === "idle" || state === "playing") {
+        startTransition(true);
+      }
+    }, HARD_TIMEOUT));
   };
 
   /* ============================================================
@@ -222,19 +244,19 @@
      ============================================================ */
 
   const initNav = function () {
-    const nav = document.getElementById("nav");
-    const burger = document.getElementById("nav-burger");
-    const links = document.getElementById("nav-links");
+    var nav = document.getElementById("nav");
+    var burger = document.getElementById("nav-burger");
+    var links = document.getElementById("nav-links");
     if (!nav || !burger || !links) return;
 
-    const onScroll = function () {
+    var onScroll = function () {
       nav.classList.toggle("scrolled", window.scrollY > 30);
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
 
     burger.addEventListener("click", function () {
-      const open = links.classList.toggle("is-open");
+      var open = links.classList.toggle("is-open");
       burger.setAttribute("aria-expanded", open ? "true" : "false");
     });
 
@@ -251,12 +273,12 @@
      ============================================================ */
 
   const initReveals = function () {
-    const els = document.querySelectorAll("[data-reveal]");
+    var els = document.querySelectorAll("[data-reveal]");
     if (prefersReducedMotion || !("IntersectionObserver" in window)) {
       els.forEach(function (el) { el.classList.add("revealed"); });
       return;
     }
-    const io = new IntersectionObserver(function (entries) {
+    var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
         if (entry.isIntersecting) {
           entry.target.classList.add("revealed");
@@ -272,17 +294,17 @@
      ============================================================ */
 
   const initChaos = function () {
-    const sticky = document.getElementById("chaos-sticky");
-    const grid = document.getElementById("chaos-grid");
+    var sticky = document.getElementById("chaos-sticky");
+    var grid = document.getElementById("chaos-grid");
     if (!sticky || !grid) return;
-    const tall = sticky.parentElement;
-    const chips = Array.prototype.slice.call(grid.querySelectorAll(".chip"));
+    var tall = sticky.parentElement;
+    var chips = Array.prototype.slice.call(grid.querySelectorAll(".chip"));
 
     chips.forEach(function (chip, i) {
-      const spread = Math.min(grid.getBoundingClientRect().width / 4.4, 175);
-      const ox = (Math.random() * 2 - 1) * spread;
-      const oy = (Math.random() * 2 - 1) * spread * 0.6;
-      const rot = (Math.random() * 2 - 1) * 15;
+      var spread = Math.min(grid.getBoundingClientRect().width / 4.4, 175);
+      var ox = (Math.random() * 2 - 1) * spread;
+      var oy = (Math.random() * 2 - 1) * spread * 0.6;
+      var rot = (Math.random() * 2 - 1) * 15;
       chip.style.setProperty("--ox", ox.toFixed(1) + "px");
       chip.style.setProperty("--oy", oy.toFixed(1) + "px");
       chip.style.setProperty("--rot", rot.toFixed(1) + "deg");
@@ -293,15 +315,15 @@
 
     if (prefersReducedMotion) { sticky.classList.add("done"); return; }
 
-    let raf = null;
-    let done = false;
+    var raf = null;
+    var done = false;
 
-    const update = function () {
-      const rect = tall.getBoundingClientRect();
-      const vh = window.innerHeight;
-      const total = rect.height - vh;
-      const scrolled = Math.min(Math.max(-rect.top, 0), total);
-      const progress = total > 0 ? scrolled / total : 0;
+    var update = function () {
+      var rect = tall.getBoundingClientRect();
+      var vh = window.innerHeight;
+      var total = rect.height - vh;
+      var scrolled = Math.min(Math.max(-rect.top, 0), total);
+      var progress = total > 0 ? scrolled / total : 0;
 
       if (!done && progress > 0.42) {
         done = true;
@@ -312,7 +334,7 @@
       raf = null;
     };
 
-    const onScroll = function () {
+    var onScroll = function () {
       if (!raf) raf = requestAnimationFrame(update);
     };
 
@@ -325,7 +347,7 @@
      5. INTERACTIVE MEDICAL TERMINOLOGY
      ============================================================ */
 
-  const termData = {
+  var termData = {
     mandibular: {
       english: "Mandibular Nerve",
       arabic: "العصب الفكي السفلي",
@@ -347,19 +369,19 @@
   };
 
   const initTerms = function () {
-    const tabs = document.querySelectorAll(".term-tab");
-    const panel = document.getElementById("term-panel");
+    var tabs = document.querySelectorAll(".term-tab");
+    var panel = document.getElementById("term-panel");
     if (!panel) return;
 
-    const fields = {
+    var fields = {
       english: document.getElementById("term-english"),
       arabic: document.getElementById("term-arabic"),
       ipa: document.getElementById("term-ipa"),
       text: document.getElementById("term-text")
     };
 
-    const swap = function (key) {
-      const d = termData[key];
+    var swap = function (key) {
+      var d = termData[key];
       if (!d) return;
       fields.english.textContent = d.english;
       fields.arabic.textContent = d.arabic;
@@ -390,19 +412,19 @@
 
   const initParallax = function () {
     if (prefersReducedMotion) return;
-    const els = document.querySelectorAll("[data-parallax]");
+    var els = document.querySelectorAll("[data-parallax]");
     if (!els.length) return;
 
-    let raf = null;
-    const update = function () {
-      const sy = window.scrollY;
+    var raf = null;
+    var update = function () {
+      var sy = window.scrollY;
       els.forEach(function (el) {
-        const speed = parseFloat(el.dataset.parallax) || 0;
+        var speed = parseFloat(el.dataset.parallax) || 0;
         el.style.setProperty("--par", (sy * speed).toFixed(1) + "px");
       });
       raf = null;
     };
-    const onScroll = function () {
+    var onScroll = function () {
       if (!raf) raf = requestAnimationFrame(update);
     };
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -420,22 +442,8 @@
     initTerms();
     initParallax();
 
-    if (prefersReducedMotion) {
-      let seen = false;
-      try { seen = !!sessionStorage.getItem(STORAGE_KEY); } catch (e) { /* ignore */ }
-      if (seen) {
-        finishQuick();
-        return;
-      }
-      /* First-time visitor with reduced motion: still show the intro,
-         just with simplified transitions (handled by CSS). */
-    }
-
-    let seen = false;
-    try { seen = !!sessionStorage.getItem(STORAGE_KEY); } catch (e) { /* ignore */ }
-
-    if (seen) {
-      finishQuick();
+    if (hasSeen() || (prefersReducedMotion && hasSeen())) {
+      skipToIntro();
     } else {
       runIntro();
     }

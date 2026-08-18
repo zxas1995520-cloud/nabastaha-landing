@@ -177,8 +177,8 @@ button { font-family: inherit; cursor: pointer; background: none; border: none; 
   transition: opacity 0.9s ease 0.35s;
 }
 
-body { overscroll-behavior: none; }
-#intro { touch-action: none; }
+body.intro-active { overscroll-behavior: none; }
+body.intro-active #intro { touch-action: none; }
 
 /* CSS safety-net: auto-dismiss the intro after ~17 s when JS never runs.
    JS disables this animation on init via inline style override.
